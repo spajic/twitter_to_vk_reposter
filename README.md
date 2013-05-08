@@ -13,12 +13,15 @@ Usage
 ---------------------------------------
 1. Install ruby
   1. [RubyInstaller for Windows] (http://rubyinstaller.org/downloads)
-  2. [DevKit] (https://github.com/oneclick/rubyinstaller/wiki/development-kit) may help to build gems. Read instruction to setup
+  2. [DevKit] (https://github.com/oneclick/rubyinstaller/wiki/development-kit) may help to build gems. 
+      Read instruction to setup
 2. Check that ruby works well with SSL 
-  (I encountered some issues, [this] (https://gist.github.com/fnichol/867550) helped)
-3. Get VK ouath token (read [VK documentation] (http://vk.com/developers.php?id=-1_37230422&s=1) for that)
-4. Create file config.yaml by example, fill twitter user_name and VK oauth token
-5. Run script (as for now script reposts only posts that are tagged with #vk and #gipis, 
+  (I encountered some issues, [this] (https://gist.github.com/fnichol/867550) helped, 
+[more info](http://railsapps.github.io/openssl-certificate-verify-failed.html))
+3. Instal vk-ruby (gem install vk-ruby)
+4. Get VK ouath token (read [VK documentation] (http://vk.com/developers.php?id=-1_37230422&s=1) for that)
+5. Create file config.yaml by example, fill twitter user_name and VK oauth token
+6. Run script (as for now script reposts only posts that are tagged with #vk and #gipis, 
   it can be simply modified through code)
 
 How to get VK oauth token
