@@ -38,8 +38,22 @@ class TwitterToVkReposter
     return post['entities']['hashtags'].collect{|x| x['text']}
   end
 
+  def urls_of_post(post)
+    return post['entities']['urls']
+  end
+
+  def replace_urls_with_expanded_urls(post, text)
+    urls = urls_of_post(post)
+    urls.each do |url|
+      text.sub! url['url'], url['expanded_url']
+    end
+    return text
+  end
+
   def construct_text_by_post(post)
-    return CGI.unescapeHTML(post['text'])
+    text = post['text']
+    text = replace_urls_with_expanded_urls(post, text)
+    return text
   end
 
   def post_message_to_vk_wall_by_post(post)
