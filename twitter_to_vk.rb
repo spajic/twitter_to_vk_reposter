@@ -42,6 +42,10 @@ class TwitterToVkReposter
     return post['entities']['urls']
   end
 
+  def expanded_urls_of_post(post)
+    return post['entities']['urls'].collect{|x| x['expanded_url']}
+  end
+
   def replace_urls_with_expanded_urls(post, text)
     urls = urls_of_post(post)
     urls.each do |url|
@@ -68,7 +72,7 @@ class TwitterToVkReposter
 
   def satisfies_conditions(post)
     return false if creation_time_of_post(post) <= @latest_repost_time
-    return false if tags_of_post(post) & ['vk', 'gipis'] != ['vk', 'gipis']
+    return false if not expanded_urls_of_post(post).any? {|s| s.include?('gip.is')}
     return true
   end
 
