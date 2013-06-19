@@ -1,5 +1,9 @@
 :twitter:
   :user_name: twitty
+    :consumer_key: 'ss123ALSKJLkjsdlkj'
+    :consumer_secret: 'alskdflkajsdfolKJLAKFJ129ueflkjlkjLAKJF'
+    :oauth_token: 'asldkfj(*U(u-1kjlskjLKjflkjlskjdlkjlq'
+    :oauth_token_secret: 'asldkflksdjfoqijlklkjiojzlxkcjoijoq123lkmlk'
 
 :vk:
   :oauth_token: '651e4e2de99780455e8269af717050e4zhq10e0bb4a8d753f656afdf528e24c96c93174b4b9bc99dc1965'

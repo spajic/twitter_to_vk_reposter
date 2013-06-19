@@ -8,7 +8,8 @@ require 'yaml'
 require 'time'
 require 'cgi'
 require 'vk-ruby'
-
+require 'twitter'
+require 'time'
 
 class TwitterToVkReposter
   @@latest_repost_time_file_name = "most_recent_saved_post_time.txt"
@@ -25,39 +26,41 @@ class TwitterToVkReposter
   end
 
   def read_posts_from_twitter()
-    return JSON.parse(
-        open("https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&screen_name=#{@config[:twitter][:user_name]}&count=10").read.to_s
-    )
+    Twitter.configure do |config|
+      config.consumer_key       = @config[:twitter][:consumer_key]
+      config.consumer_secret    = @config[:twitter][:consumer_secret]
+      config.oauth_token        = @config[:twitter][:oauth_token]
+      config.oauth_token_secret = @config[:twitter][:oauth_token_secret]
+    end
+    return Twitter.user_timeline("spajic1", :count => 10)
   end
 
   def creation_time_of_post(post)
-    return Time.parse(post['created_at'])
+    post.created_at
   end
 
   def tags_of_post(post)
-    return post['entities']['hashtags'].collect{|x| x['text']}
+    post.entities.hashtags.collect{|x| x.text}
   end
 
   def urls_of_post(post)
-    return post['entities']['urls']
+    post.urls
   end
 
   def expanded_urls_of_post(post)
-    return post['entities']['urls'].collect{|x| x['expanded_url']}
+    post.urls.collect{|x| x.expanded_url}
   end
 
   def replace_urls_with_expanded_urls(post, text)
     urls = urls_of_post(post)
     urls.each do |url|
-      text.sub! url['url'], url['expanded_url']
+      text.sub! url.url, url.expanded_url
     end
-    return text
   end
 
   def construct_text_by_post(post)
-    text = post['text']
+    text = post.text
     text = replace_urls_with_expanded_urls(post, text)
-    return text
   end
 
   def post_message_to_vk_wall_by_post(post)
