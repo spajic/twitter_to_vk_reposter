@@ -1,9 +1,5 @@
 #!/usr/bin/ruby
 
-require 'json'
-require 'open-uri'
-require 'net/http'
-require 'uri'
 require 'yaml'
 require 'vk-ruby'
 require 'twitter'
