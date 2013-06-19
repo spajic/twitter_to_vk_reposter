@@ -7,12 +7,11 @@ require 'twitter'
 class TwitterToVkReposter
   @@latest_repost_id_file_name = "most_recent_saved_post_id.txt"
 
-  def read_lastest_repost_id_from_file
-    id = open(@@latest_repost_id_file_name).read
-  end
-
-  def obtain_vk_app()
-    return VK::Application.new access_token: @config[:vk][:oauth_token]
+  def initialize
+    @config           = YAML.load_file("config.yaml")
+    @latest_repost_id = open(@@latest_repost_id_file_name).read
+    @posts            = read_posts_from_twitter()
+    @vk_app           = VK::Application.new access_token: @config[:vk][:oauth_token]
   end
 
   def read_posts_from_twitter()
@@ -61,13 +60,6 @@ class TwitterToVkReposter
   def satisfies_conditions(post)
     return false if not expanded_urls_of_post(post).any? {|s| s.include?('gip.is')}
     return true
-  end
-
-  def initialize
-    @config = YAML.load_file("config.yaml")
-    @latest_repost_id = read_lastest_repost_id_from_file()
-    @posts = read_posts_from_twitter()
-    @vk_app = obtain_vk_app()
   end
 
   def do_reposts
