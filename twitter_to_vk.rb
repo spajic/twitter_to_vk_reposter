@@ -22,9 +22,9 @@ class TwitterToVkReposter
       config.oauth_token_secret = @config[:twitter][:oauth_token_secret]
     end
     if @latest_repost_id.length > 0
-      return Twitter.user_timeline("spajic1", :since_id => @latest_repost_id)
+      return Twitter.user_timeline(@config[:twitter][:user_name], :since_id => @latest_repost_id)
     end
-      return Twitter.user_timeline("spajic1", :count => 10)
+      return Twitter.user_timeline(@config[:twitter][:user_name], :count => 10)
   end
 
   def tags_of_post(post)
