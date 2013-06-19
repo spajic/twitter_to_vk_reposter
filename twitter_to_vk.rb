@@ -5,19 +5,14 @@ require 'open-uri'
 require 'net/http'
 require 'uri'
 require 'yaml'
-require 'time'
-require 'cgi'
 require 'vk-ruby'
 require 'twitter'
-require 'time'
 
 class TwitterToVkReposter
-  @@latest_repost_time_file_name = "most_recent_saved_post_time.txt"
+  @@latest_repost_id_file_name = "most_recent_saved_post_id.txt"
 
-  def read_lastest_repost_time_from_file_or_set_very_old_time
-    very_old_time = 'Mon May 06 16:03:44 +0000 2000'
-    time_string = open(@@latest_repost_time_file_name).read.to_s rescue very_old_time
-    res = Time.parse( time_string )
+  def read_lastest_repost_id_from_file
+    id = open(@@latest_repost_id_file_name).read
   end
 
   def obtain_vk_app()
@@ -31,7 +26,10 @@ class TwitterToVkReposter
       config.oauth_token        = @config[:twitter][:oauth_token]
       config.oauth_token_secret = @config[:twitter][:oauth_token_secret]
     end
-    return Twitter.user_timeline("spajic1", :count => 10)
+    if @latest_repost_id.length > 0
+      return Twitter.user_timeline("spajic1", :since_id => @latest_repost_id)
+    end
+      return Twitter.user_timeline("spajic1", :count => 10)
   end
 
   def tags_of_post(post)
@@ -47,29 +45,31 @@ class TwitterToVkReposter
     urls.each do |url|
       text.sub! url.url, url.expanded_url
     end
+    return text
   end
 
   def post_message_to_vk_wall_by_post(post)
     text = post.text
     text = replace_urls_with_expanded_urls(post, text)
-    @vk_app.wall.post message: construct_text_by_post(post)
+    @vk_app.wall.post message: text
   end
 
-  def save_most_recent_post_time_to_file()
-    File.open(@@latest_repost_time_file_name, "w") {
-        |f| f.write( @posts[0].created_at ).to_s
-    }
+  def save_most_recent_post_id_to_file()
+    if @posts.length > 0
+      File.open(@@latest_repost_id_file_name, "w") {
+          |f| f.write( @posts[0].id ).to_s
+      }
+    end
   end
 
   def satisfies_conditions(post)
-    return false if post.created_at <= @latest_repost_time
     return false if not expanded_urls_of_post(post).any? {|s| s.include?('gip.is')}
     return true
   end
 
   def initialize
     @config = YAML.load_file("config.yaml")
-    @latest_repost_time = read_lastest_repost_time_from_file_or_set_very_old_time()
+    @latest_repost_id = read_lastest_repost_id_from_file()
     @posts = read_posts_from_twitter()
     @vk_app = obtain_vk_app()
   end
@@ -78,7 +78,7 @@ class TwitterToVkReposter
     @posts.each do |post|
       post_message_to_vk_wall_by_post(post) if satisfies_conditions(post)
     end
-    save_most_recent_post_time_to_file()
+    save_most_recent_post_id_to_file()
   end
 
 end
